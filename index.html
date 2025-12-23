@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Anonymous Chat – Login</title>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<style>
+body{
+  min-height:100vh;
+  background:linear-gradient(135deg,#0d6efd,#6610f2);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+.card{
+  border-radius:1.2rem;
+}
+
+.brand{
+  font-weight:700;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container px-3">
+  <div class="row justify-content-center">
+    <div class="col-12 col-sm-10 col-md-6 col-lg-4">
+
+      <div class="card shadow p-4">
+        <h3 class="text-center brand mb-2"> Anonymous Chat</h3>
+        <p class="text-center text-muted mb-4">Speak freely. Stay anonymous.</p>
+
+        <input id="nickname" class="form-control mb-3" placeholder="Choose a nickname">
+        <input id="password" type="password" class="form-control mb-4" placeholder="Password">
+
+        <div class="d-grid gap-2">
+          <button class="btn btn-primary" onclick="login()">Login</button>
+          <button class="btn btn-outline-secondary" onclick="register()">Register</button>
+        </div>
+
+        <p id="status" class="text-center text-danger mt-3 small"></p>
+      </div>
+
+      <p class="text-center text-white mt-3 small">
+        Website created by Joss Mogashoa
+      </p>
+
+    </div>
+  </div>
+</div>
+
+<script>
+const API = "http://127.0.0.1:5000";
+
+function login(){
+  send("login");
+}
+
+function register(){
+  send("register");
+}
+
+function send(type){
+  const nickname = document.getElementById("nickname").value.trim();
+  const password = document.getElementById("password").value.trim();
+  const status = document.getElementById("status");
+
+  status.innerText = "";
+
+  if(!nickname || !password){
+    status.innerText = "Please fill in all fields";
+    return;
+  }
+
+  status.innerText = "Please wait...";
+
+  fetch(API + "/" + type,{
+    method:"POST",
+    headers:{ "Content-Type":"application/json" },
+    body:JSON.stringify({ nickname, password })
+  })
+  .then(res=>{
+    if(res.ok){
+      return res.json().catch(()=>({ nickname }));
+    }
+    if(res.status === 409){
+      throw "User already exists";
+    }
+    throw "Invalid login or registration failed";
+  })
+  .then(data=>{
+    localStorage.setItem("user", nickname.toLowerCase());
+    window.location.href = "chat.html";
+  })
+  .catch(err=>{
+    status.innerText = err;
+  });
+}
+</script>
+
+</body>
+</html>
