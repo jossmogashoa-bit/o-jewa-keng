@@ -2,151 +2,213 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
+  <title>My Moon 🌙</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>For Jessica 💖</title>
-
-  <!-- Bootstrap -->
-  <link
-    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
-    rel="stylesheet"
-  />
 
   <!-- React -->
   <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
   <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
 
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Poppins:wght@300;400&display=swap" rel="stylesheet">
+
   <style>
     body {
-      background: linear-gradient(135deg, #ffe4e6, #fbcfe8);
+      margin: 0;
       min-height: 100vh;
+      font-family: "Poppins", sans-serif;
+      background:
+        linear-gradient(rgba(0,0,0,0.55), rgba(0,0,0,0.55)),
+        url("https://images.unsplash.com/photo-1518199266791-5375a83190b7");
+      background-size: cover;
+      background-position: center;
       display: flex;
       justify-content: center;
       align-items: center;
-      font-family: "Segoe UI", sans-serif;
+      color: white;
+      overflow: hidden;
+      position: relative;
+    }
+
+    /* Subtle reflected name in background */
+    .bg-name {
+      position: absolute;
+      font-family: "Playfair Display", serif;
+      font-size: 11rem;
+      letter-spacing: 1.2rem;
+      color: rgba(255, 182, 193, 0.05);
+      filter: blur(6px);
+      transform: rotate(-12deg);
+      bottom: 12%;
+      right: -15%;
+      user-select: none;
+      pointer-events: none;
+      z-index: 0;
     }
 
     .card {
-      border-radius: 20px;
+      position: relative;
+      z-index: 2;
+      background: rgba(255, 255, 255, 0.12);
+      backdrop-filter: blur(14px);
+      border-radius: 26px;
+      padding: 2.6rem;
+      max-width: 430px;
+      width: 90%;
+      text-align: center;
+      box-shadow: 0 25px 55px rgba(0,0,0,0.55);
+      animation: fadeIn 1.8s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .moon {
+      font-family: "Playfair Display", serif;
+      font-size: 2.7rem;
+      color: #ffd1dc;
+      text-shadow: 0 0 20px rgba(255,209,220,0.8);
+    }
+
+    .name {
+      font-family: "Playfair Display", serif;
+      font-size: 2.3rem;
+      margin-top: 0.6rem;
+      min-height: 2.8rem;
+      color: #ff9ecb;
+      transition: text-shadow 1.5s ease;
+    }
+
+    /* Glow only AFTER full reveal */
+    .name.glow {
+      text-shadow:
+        0 0 14px rgba(255,158,203,0.8),
+        0 0 32px rgba(255,158,203,1);
+    }
+
+    .message {
+      margin-top: 1.6rem;
+      font-size: 1.05rem;
+      line-height: 1.7;
       animation: float 4s ease-in-out infinite;
     }
 
     @keyframes float {
       0%,100% { transform: translateY(0); }
-      50% { transform: translateY(-10px); }
+      50% { transform: translateY(-8px); }
     }
 
     .heart {
-      font-size: 3rem;
+      font-size: 2.6rem;
+      margin-top: 1.4rem;
       animation: pulse 1.5s infinite;
     }
 
     @keyframes pulse {
       0% { transform: scale(1); }
-      50% { transform: scale(1.2); }
+      50% { transform: scale(1.25); }
       100% { transform: scale(1); }
     }
 
-    /* Soft glow for name */
-    .glow-name {
-      color: #db2777;
-      text-shadow: 0 0 10px rgba(219,39,119,0.6);
-      animation: glow 2.5s ease-in-out infinite;
+    .music-btn {
+      margin-top: 2rem;
+      padding: 0.75rem 1.6rem;
+      border-radius: 999px;
+      border: none;
+      background: #ff6f91;
+      color: white;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: transform 0.3s, box-shadow 0.3s;
+      box-shadow: 0 10px 20px rgba(0,0,0,0.35);
     }
 
-    @keyframes glow {
-      0% { text-shadow: 0 0 5px rgba(219,39,119,0.4); }
-      50% { text-shadow: 0 0 16px rgba(219,39,119,0.9); }
-      100% { text-shadow: 0 0 5px rgba(219,39,119,0.4); }
-    }
-
-    .typing {
-      min-height: 140px;
-      white-space: pre-wrap;
+    .music-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 18px 35px rgba(0,0,0,0.5);
     }
   </style>
 </head>
 
 <body>
+
+  <!-- Background reflection -->
+  <div class="bg-name">JOSS</div>
+
   <div id="root"></div>
+
+  <!-- Background music -->
+  <audio id="bgMusic" loop>
+    <source src="https://www.bensound.com/bensound-music/bensound-love.mp3" type="audio/mpeg">
+  </audio>
 
   <script>
     const { useState, useEffect } = React;
 
-    function App() {
-      const message =
-        "Jay wants you to know something special.\n\n" +
-        "He truly believes that you definitely belong with him, " +
-        "and that it’s time to lock in to love — with honesty, care, " +
-        "and real intentions.\n\n" +
-        "No pressure. Just sincerity 💗";
-
-      const [text, setText] = useState("");
+    function ValentineCard() {
+      const fullName = "Naledi";
+      const [nameText, setNameText] = useState("");
       const [index, setIndex] = useState(0);
+      const [glow, setGlow] = useState(false);
+      const [playing, setPlaying] = useState(false);
 
+      // Letter-by-letter reveal
       useEffect(() => {
-        if (index < message.length) {
-          const t = setTimeout(() => {
-            setText(prev => prev + message.charAt(index));
+        if (index < fullName.length) {
+          const timer = setTimeout(() => {
+            setNameText(prev => prev + fullName.charAt(index));
             setIndex(prev => prev + 1);
-          }, 40);
-          return () => clearTimeout(t);
+          }, 220);
+          return () => clearTimeout(timer);
+        }
+
+        if (index === fullName.length) {
+          setTimeout(() => setGlow(true), 500);
         }
       }, [index]);
 
-      return (
+      const toggleMusic = () => {
+        const music = document.getElementById("bgMusic");
+        playing ? music.pause() : music.play();
+        setPlaying(!playing);
+      };
+
+      return React.createElement(
+        "div",
+        { className: "card" },
+
+        React.createElement("div", { className: "moon" }, "My Moon 🌙"),
+
         React.createElement(
           "div",
-          { className: "container" },
-          React.createElement(
-            "div",
-            {
-              className: "card shadow-lg p-4 text-center mx-auto",
-              style: { maxWidth: "420px" }
-            },
+          { className: `name ${glow ? "glow" : ""}` },
+          nameText
+        ),
 
-            React.createElement("div", { className: "heart mb-3" }, "💖"),
+        React.createElement(
+          "p",
+          { className: "message" },
+          "In a world full of noise, you are my calm.\n\n" +
+          "You shine quietly and beautifully — " +
+          "constant, gentle, and unforgettable.\n\n" +
+          "This card isn’t just code… it’s intention."
+        ),
 
-            React.createElement(
-              "h2",
-              { className: "fw-bold mb-3 glow-name" },
-              "Jessica"
-            ),
+        React.createElement("div", { className: "heart" }, "❤️"),
 
-            React.createElement(
-              "div",
-              { className: "typing text-muted fs-5 mt-3" },
-              text
-            ),
-
-            React.createElement(
-              "button",
-              {
-                onClick: sendWhatsAppReply,
-                className: "btn btn-success btn-lg mt-4 w-100"
-              },
-              "Reply on WhatsApp 💬"
-            )
-          )
+        React.createElement(
+          "button",
+          { className: "music-btn", onClick: toggleMusic },
+          playing ? "Pause Music 🎵" : "Play Music 🎶"
         )
       );
     }
 
-    function sendWhatsAppReply() {
-      const replyMessage =
-        "Hey Jay 💗\n\n" +
-        "I saw your message and it really made me smile. " +
-        "Let’s talk and see where love takes us 😊";
-
-      const encoded = encodeURIComponent(replyMessage);
-
-      // Opens WhatsApp with pre-filled message (user chooses to send)
-      window.open("https://wa.me/?text=" + encoded, "_blank");
-    }
-
     ReactDOM.createRoot(document.getElementById("root")).render(
-      React.createElement(App)
+      React.createElement(ValentineCard)
     );
   </script>
 </body>
 </html>
-
